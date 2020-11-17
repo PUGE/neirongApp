@@ -139,3 +139,9 @@
   border-radius: 3px;
   margin: 4px;
 }
+
+.neirong-number-info {
+  position: absolute;
+  right: 10px;
+  bottom: 3px;
+}
