@@ -1,0 +1,141 @@
+.nrsh {
+  background-color: #ccc;
+  cursor: pointer;
+  display: inline;
+}
+
+.nrsh.like {
+  background-color: chocolate;
+  color: white;
+  border-radius: 3px;
+}
+
+.nrsh.Polity {
+  background-color: yellow;
+  border-radius: 3px;
+}
+
+.nrsh.Abuse {
+  background-color: cadetblue;
+  color: white;
+  border-radius: 3px;
+}
+
+.nrsh.Standard {
+  background-color: salmon;
+  border-radius: 3px;
+  color: white;
+}
+
+.error.nrsh,
+.regexp-like.nrsh,
+.chengyu-like.nrsh {
+  background-color: red;
+  color: white;
+  border-radius: 3px;
+}
+
+.neirong-box {
+  position: fixed;
+  bottom: 20px;
+  width: 90%;
+  margin: 0px auto;
+  left: 0px;
+  right: 0px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  padding: 5px;
+  background-color: white;
+  z-index: 99999;
+  box-shadow: 1px 1px 3px #b39c9c;
+}
+
+.neirong-text {
+  width: calc(100% - 143px);
+  border: 1px solid #ccc;
+  padding: 0 5px;
+  border-radius: 5px;
+}
+
+.neirong-button-1 {
+  width: 60px;
+  text-align: center;
+  line-height: 30px;
+  background-color: #009fe9;
+  color: white;
+  border-radius: 5px;
+  margin-left: 5px;
+  cursor: pointer;
+}
+
+.neirong-button-2 {
+  width: 60px;
+  text-align: center;
+  line-height: 30px
+  ;background-color: teal;
+  color: white;
+  border-radius: 5px;
+  margin-left: 5px;
+  cursor: pointer;
+}
+
+.neirong-show {
+  position: fixed;
+  z-index: 9999;
+  right: 50px;
+  max-height: 500px;
+  top: 60px;
+  width: 250px;
+  background-color: teal;
+  border-radius: 5px;
+  opacity: 0.95;
+  padding: 10px;
+  font-size: 12px;
+  color: white;
+  line-height: 22px;
+  box-shadow: 1px 1px 6px #27262d;
+  display: none;
+}
+
+.neirong-title {
+  font-size: 16px;
+  text-align: center;
+  border-bottom: 1px solid white;
+  font-weight: bold;
+}
+
+.neirong-box .neirong-top {
+  display: flex;
+  width: 100%;
+  height: 30px;
+}
+
+.neirong-box .neirong-bottom {
+  height: 25px;
+}
+
+.neirong-bottom {
+  display: flex;
+  align-items: center;
+  line-height: 26px;
+  overflow: hidden;
+  color: #666;
+}
+
+.neirong-bottom input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin: 4px 2px;
+}
+
+.neirong-bottom span {
+  /* margin: 0 5px; */
+}
+
+.neirong-bottom input[type="number"] {
+  width: 40px;
+  text-align: center;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  margin: 4px;
+}

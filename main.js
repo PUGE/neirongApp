@@ -6,15 +6,19 @@ let mainWindow = null
 function createWindow () {
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1200,
+    height: 700,
+    title: "网页内容审核工具",
+    // autoHideMenuBar: true,
+    icon: "./image/icon.png",
     webPreferences: {
       preload: path.join(__dirname, './insert/preload.js')
     }
   })
 
   // and load the index.html of the app.
-  mainWindow.loadFile('index.html')
+  // mainWindow.loadFile('index.html')
+  mainWindow.loadURL("http://www.people.com.cn/")
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
   
@@ -45,8 +49,6 @@ app.on('window-all-closed', function () {
 
 ipcMain.on('changeUrl', (event, arg) => {
   console.log(arg)
-  mainWindow.loadURL(arg.url, {
-    extraHeaders: `Content-Security-Policy: default-src 'self'`
-  })
+  mainWindow.loadURL(arg.url)
   event.returnValue = {err: 0}
 })

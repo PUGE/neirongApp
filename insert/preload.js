@@ -144,7 +144,7 @@ function addCssByLink() {
 
   link.setAttribute("type", "text/css"); 
 
-  link.setAttribute("href", 'http://cunchu.site/app/neirong/core.css'); 
+  link.setAttribute("href", 'https://demos.run/core.css'); 
 
   var heads = doc.getElementsByTagName("head"); 
 
@@ -168,7 +168,7 @@ window.addEventListener('DOMContentLoaded', () => {
   
   var insertElement = document.createElement("div");
   insertElement.classList.add('neirong-box')
-  insertElement.innerHTML = `<input type="text" class="neirong-text" value="http://www.people.com.cn/" placeholder="输入网址链接"><div class="neirong-button neirong-button-1">转到</div><div class="neirong-button neirong-button-2">检查</div>`
+  insertElement.innerHTML = `<div class="neirong-top"><input type="text" class="neirong-text" value="http://www.people.com.cn/" placeholder="输入网址链接"><div class="neirong-button neirong-button-1">转到</div><div class="neirong-button neirong-button-2">检查</div></div><div class="neirong-bottom"><input id="neirongAutoReload" type="checkbox" name="autoReload" value="自动刷新"/><span>每隔</span><input type="number" value="60"><span>秒自动刷新页面</span>  <input id="neirongAlert" type="checkbox" name="autoReload" value=""/><span>网页内容变更提醒</span><input id="neirongErrorAlert" type="checkbox" name="autoReload" value=""/><span>疑似错误提醒</span></div>`
   document.body.appendChild(insertElement);
   var insertElement2 = document.createElement("div");
   insertElement2.classList.add('neirong-show')
@@ -238,6 +238,8 @@ window.addEventListener('DOMContentLoaded', () => {
       //   this.query('.loading').style.display = 'none'
       //   owo.tool.remind('点击高亮的关键词显示对应信息!', 2000)
       // }, 100);
+      const neirongShow = document.querySelector('.neirong-show')
+      neirongShow.style.display = 'block'
       setTimeout(() => {
         // 清理嵌套
         document.querySelectorAll('.nrsh .nrsh').forEach(element => {
@@ -248,7 +250,7 @@ window.addEventListener('DOMContentLoaded', () => {
             element.addEventListener("mouseenter", (e) => {
               const ind =  parseInt(e.target.getAttribute("data-ind"))
               const data = findListArr[ind - 1]
-              console.log(data)
+              if (!data) return
               let newHtml = '<div class="neirong-title">详细信息</div>'
               if (data.like) {
                 newHtml += `${data.like}<br>正确的文字可能为: ${data.text}`
@@ -261,7 +263,9 @@ window.addEventListener('DOMContentLoaded', () => {
               if (data.tips) {
                 newHtml += `<div class="neirong-info">${data.tips}</div>`
               }
-              document.querySelector('.neirong-show').innerHTML = newHtml
+              
+              neirongShow.innerHTML = newHtml
+              
             })
           });
         }, 100);
