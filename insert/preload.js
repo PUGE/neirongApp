@@ -1,7 +1,7 @@
 // All of the Node.js APIs are available in the preload process.
 // It has the same sandbox as a Chrome extension.
 const ipcRenderer = require('electron').ipcRenderer
-
+const sentenceHideArr = [',', '"', '“', '”', '.', '。', '，']
 
 
 const serverIP = 'http://49.232.216.171:8006/'
@@ -19,7 +19,7 @@ function chengyuBaseHandle (htmlData, data) {
       item.type = '正确成语'
       item.tips = `<h2 style="font-size: 20px;">${item['text']}</h2><h2 style="font-size: 20px;">[${item['pinyin2']}]</h2><p>释义：${item['interpretation']}</p><p>出处：${item['source']}</p><p>示例：${item['example']}</p>`
       // 如果词的类型为政治词语，不一致为错误，其他类型不一致为对应类型
-      htmlData = htmlData.replace(new RegExp(item['text'], "gm"), `<span data-ind="${findListArr.length}" class="nrsh chengyu chengyu-base">${item['text']}</span>`)
+      htmlData = htmlData.replace(new RegExp(item['text'], "gm"), `<nrsh data-ind="${findListArr.length}" class="nrsh chengyu chengyu-base">${item['text']}</nrsh>`)
       rightNum++
     }
   })
@@ -34,10 +34,22 @@ function chengyuPinyinHandle (htmlData, data) {
       findList[item['like']] = item
       findListArr.push(item)
       item.type = '错误成语'
+      const startPos = htmlData.indexOf(item['like'])
+      const startStr = htmlData.slice(startPos - 1, startPos)
+      const endStr = htmlData.slice(startPos + item['text'].length, startPos + item['text'].length + 1)
+      item.sentence = []
+      if (!sentenceHideArr.includes(startStr)) {
+        item.sentence.push(startStr + item['like'])
+      }
+      if (!sentenceHideArr.includes(endStr)) {
+        item.sentence.push(item['like'] + endStr)
+      }
+      item.sentenceStr = htmlData.slice(startPos - 4, startPos + item['text'].length + 4)
       item.tips = `<h2 style="font-size: 20px;">${item['text']}</h2><h2 style="font-size: 20px;">[${item['pinyin2']}]</h2><p>释义：${item['interpretation']}</p><p>出处：${item['source']}</p><p>示例：${item['example']}</p>`
       // 如果词的类型为政治词语，不一致为错误，其他类型不一致为对应类型
-      htmlData = htmlData.replace(new RegExp(item['like'], "gm"), `<span data-ind="${findListArr.length}" class="nrsh chengyu chengyu-like">${item['like']}</span>`)
+      htmlData = htmlData.replace(new RegExp(item['like'], "gm"), `<nrsh data-ind="${findListArr.length}" class="nrsh chengyu chengyu-like">${item['like']}</nrsh>`)
       errorNum++
+      errorArr.push(item)
     }
   })
   return htmlData
@@ -50,9 +62,9 @@ function baseHandle (htmlData, data) {
       findList[item['text']] = item
       findListArr.push(item)
       if (item.type === 'Standard') {
-        htmlData = htmlData.replace(new RegExp(item['text'], "gm"), `<span data-ind="${findListArr.length}" class="nrsh base Standard">${item['text']}</span>`)
+        htmlData = htmlData.replace(new RegExp(item['text'], "gm"), `<nrsh data-ind="${findListArr.length}" class="nrsh base Standard">${item['text']}</nrsh>`)
       } else {
-        htmlData = htmlData.replace(new RegExp(item['text'],"gm"), `<span data-ind="${findListArr.length}" class="nrsh base ${item.type}">${item['text']}</span>`)
+        htmlData = htmlData.replace(new RegExp(item['text'],"gm"), `<nrsh data-ind="${findListArr.length}" class="nrsh base ${item.type}">${item['text']}</nrsh>`)
       }
       rightNum++
     }
@@ -66,13 +78,25 @@ function pinyinHandle (htmlData, data) {
     if (!findList[item['like']]) {
       findList[item['like']] = item
       findListArr.push(item)
+      const startPos = htmlData.indexOf(item['like'])
+      const startStr = htmlData.slice(startPos - 1, startPos)
+      const endStr = htmlData.slice(startPos + item['text'].length, startPos + item['text'].length + 1)
+      item.sentence = []
+      if (!sentenceHideArr.includes(startStr)) {
+        item.sentence.push(startStr + item['like'])
+      }
+      if (!sentenceHideArr.includes(endStr)) {
+        item.sentence.push(item['like'] + endStr)
+      }
+      item.sentenceStr = htmlData.slice(startPos - 4, startPos + item['text'].length + 4)
       // 如果词的类型为政治词语，不一致为错误，其他类型不一致为对应类型
       if (item.type === 'Polity') {
-        htmlData = htmlData.replace(new RegExp(item['like'], "gm"), `<span data-ind="${findListArr.length}" class="nrsh like error">${item['like']}</span>`)
+        htmlData = htmlData.replace(new RegExp(item['like'], "gm"), `<nrsh data-ind="${findListArr.length}" class="nrsh like error">${item['like']}</nrsh>`)
       } else {
-        htmlData = htmlData.replace(new RegExp(item['like'], "gm"), `<span data-ind="${findListArr.length}" class="nrsh like ${item.type}">${item['like']}</span>`)
+        htmlData = htmlData.replace(new RegExp(item['like'], "gm"), `<nrsh data-ind="${findListArr.length}" class="nrsh like ${item.type}">${item['like']}</nrsh>`)
       }
       errorNum++
+      errorArr.push(item)
     }
   })
   return htmlData
@@ -84,7 +108,7 @@ function networkHandle (htmlData, data) {
     if (!findList[item['HitInfo']]) {
       findList[item['HitInfo']] = item
       findListArr.push(item)
-      htmlData = htmlData.replace(new RegExp(item['HitInfo'],"gm"), `<span data-ind="${findListArr.length}" class="nrsh">${item['HitInfo']}</span>`)
+      htmlData = htmlData.replace(new RegExp(item['HitInfo'],"gm"), `<nrsh data-ind="${findListArr.length}" class="nrsh">${item['HitInfo']}</nrsh>`)
     } else {
       console.log(`${item['HitInfo']} 已被找出，跳过词语!`)
     }
@@ -97,18 +121,29 @@ function regexpHandle (htmlData, data) {
     if (!findList[item['like']]) {
       findList[item['like']] = item
       findListArr.push(item)
+      const startPos = htmlData.indexOf(item['like'])
+      const startStr = htmlData.slice(startPos - 1, startPos)
+      const endStr = htmlData.slice(startPos + item['text'].length, startPos + item['text'].length + 1)
+      item.sentence = []
+      if (!sentenceHideArr.includes(startStr)) {
+        item.sentence.push(startStr + item['like'])
+      }
+      if (!sentenceHideArr.includes(endStr)) {
+        item.sentence.push(item['like'] + endStr)
+      }
+      item.sentenceStr = htmlData.slice(startPos - 4, startPos + item['text'].length + 4)
       if (item['likeNumber'] != 100) {
         item.type = '疑似错误'
-        htmlData = htmlData.replace(new RegExp(item['like'], "gm"), `<span data-ind="${findListArr.length}" class="nrsh regexp regexp-like">${item['like']}</span>`)
+        htmlData = htmlData.replace(new RegExp(item['like'], "gm"), `<nrsh data-ind="${findListArr.length}" class="nrsh regexp regexp-like">${item['like']}</nrsh>`)
       } else {
-        htmlData = htmlData.replace(new RegExp(item['like'], "gm"), `<span data-ind="${findListArr.length}" class="nrsh regexp XiYu">${item['like']}</span>`)
+        htmlData = htmlData.replace(new RegExp(item['like'], "gm"), `<nrsh data-ind="${findListArr.length}" class="nrsh regexp XiYu">${item['like']}</nrsh>`)
       }
       errorNum++
+      errorArr.push(item)
     }
   })
   return htmlData
 }
-
 
 function addCssByLink() { 
  
@@ -133,6 +168,16 @@ function addCssByLink() {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
+  // 所有链接当前窗口打开
+  document.querySelectorAll('a').forEach(element => {
+    element.setAttribute('target', '_self')
+  });
+  document.querySelectorAll('[alt]').forEach(element => {
+    element.setAttribute('alt', '')
+  });
+  document.querySelectorAll('[title]').forEach(element => {
+    element.setAttribute('title', '')
+  });
   // const replaceText = (selector, text) => {
   //   const element = document.getElementById(selector)
   //   if (element) element.innerText = text
@@ -152,6 +197,7 @@ window.addEventListener('DOMContentLoaded', () => {
   function checkConn () {
     rightNum = 0
     errorNum = 0
+    errorArr = []
     let TextArr = []
     document.querySelectorAll('a').forEach(element => {
       TextArr.push(element.innerText)
@@ -179,7 +225,7 @@ window.addEventListener('DOMContentLoaded', () => {
         "xiyu": true,
         // "hideRight": true,
         // "log": true,
-        // "likeAlertNumber": 90
+        "likeAlertNumber": 80
       },"content": checkData})
     }).then(response => response.json()).then(result => {
       let htmlData = document.body.innerHTML
@@ -217,13 +263,26 @@ window.addEventListener('DOMContentLoaded', () => {
       //   owo.tool.remind('点击高亮的关键词显示对应信息!', 2000)
       // }, 100);
       const neirongShow = document.querySelector('.neirong-show')
-      neirongShow.style.display = 'block'
+      
       setTimeout(() => {
         document.querySelector('.neirong-number-info').innerText = `正确关键词：${rightNum}个 疑似错误：${errorNum}个`
+        console.log(errorArr)
         // 如果有错误报警
         if (errorNum > 0) {
           new Audio("https://cunchu.site/app/neirong/ding.mp3").play()
         }
+        let errorText = '<div class="neirong-title">疑似错误</div>'
+        if (errorArr.length > 0) {
+          for (let index = 0; index < errorArr.length; index++) {
+            const element = errorArr[index];
+            errorText += `<p>关键词 [${element.like}] 疑似为 [${element.text}] <span class="neirong_clear" onclick="neirongXuexi(${index})">学习为无误</span></p>`
+          }
+        } else {
+          errorText = '<div class="neirong-title">未发现疑似错误</div>'
+        }
+        
+        neirongShow.innerHTML = errorText
+        neirongShow.style.display = 'block'
         // 清理嵌套
         document.querySelectorAll('.nrsh .nrsh').forEach(element => {
           element.outerHTML = element.innerText
@@ -273,5 +332,6 @@ window.addEventListener('DOMContentLoaded', () => {
   setTimeout(() => {
     addCssByLink()
     reInit()
+    document.querySelector('.neirong-text').value = window.location.href
   }, 0);
 })

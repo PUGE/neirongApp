@@ -4,7 +4,8 @@
   "description": "A minimal Electron application",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "build": "electron-builder"
   },
   "repository": "https://github.com/PUGE/neirong",
   "keywords": [
@@ -17,6 +18,18 @@
   "author": "GitHub",
   "license": "CC0-1.0",
   "devDependencies": {
-    "electron": "^10.1.5"
+    "electron": "^10.1.5",
+    "electron-builder": "^22.9.1"
+  },
+  "build": {
+    "productName":"网页内容校对程序",
+    "appId": "com.puge.neirong",
+    "copyright":"PUGE",
+    "directories": {
+      "output": "build"
+    }, 
+    "win": {  
+      "icon": "./image/icon.ico"
+    }  
   }
 }

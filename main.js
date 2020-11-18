@@ -6,8 +6,8 @@ let mainWindow = null
 function createWindow () {
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    width: 1200,
-    height: 700,
+    width: 1400,
+    height: 800,
     title: "网页内容审核工具",
     // autoHideMenuBar: true,
     icon: "./image/icon.png",
@@ -21,7 +21,10 @@ function createWindow () {
   mainWindow.loadURL("http://www.people.com.cn/")
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
-  
+  mainWindow.webContents.on("did-finish-load", function() {
+    const js = fs.readFileSync(path.join(__dirname, './insert/neirongCore.js')).toString();
+    mainWindow.webContents.executeJavaScript(js);
+  });
 }
 
 // This method will be called when Electron has finished
