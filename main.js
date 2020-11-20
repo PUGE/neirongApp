@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-const {app, ipcMain, BrowserWindow} = require('electron')
+const {app, ipcMain, BrowserWindow, webContents} = require('electron')
 const path = require('path')
 const fs = require("fs")
 let mainWindow = null
@@ -9,9 +9,10 @@ function createWindow () {
     width: 1400,
     height: 800,
     title: "网页内容审核工具",
-    // autoHideMenuBar: true,
+    autoHideMenuBar: true,
     icon: "./image/icon.png",
     webPreferences: {
+      nodeIntegration: true,
       preload: path.join(__dirname, './insert/preload.js')
     }
   })
@@ -25,6 +26,11 @@ function createWindow () {
     const js = fs.readFileSync(path.join(__dirname, './insert/neirongCore.js')).toString();
     mainWindow.webContents.executeJavaScript(js);
   });
+  // mainWindow.webContents.on('found-in-page', (event, result) => {
+  //   if (result.finalUpdate) {
+  //     mainWindow.webContents.stopFindInPage('keepSelection');
+  //   }
+  // })
 }
 
 // This method will be called when Electron has finished
@@ -53,5 +59,12 @@ app.on('window-all-closed', function () {
 ipcMain.on('changeUrl', (event, arg) => {
   console.log(arg)
   mainWindow.loadURL(arg.url)
+  console.log(requestId)
   event.returnValue = {err: 0}
 })
+
+ipcMain.on('search-text', (event, arg) => {
+  console.log(arg)
+  mainWindow.webContents.findInPage(arg);
+  event.returnValue = {err: 0}
+});

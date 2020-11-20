@@ -1,6 +1,6 @@
 {
   "name": "neirong",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A minimal Electron application",
   "main": "main.js",
   "scripts": {
@@ -22,14 +22,17 @@
     "electron-builder": "^22.9.1"
   },
   "build": {
-    "productName":"网页内容校对程序",
+    "productName": "内容校对程序",
     "appId": "com.puge.neirong",
-    "copyright":"PUGE",
+    "copyright": "PUGE",
     "directories": {
       "output": "build"
-    }, 
-    "win": {  
+    },
+    "win": {
       "icon": "./image/icon.ico"
-    }  
+    }
+  },
+  "dependencies": {
+    "nedb": "^1.8.0"
   }
 }
