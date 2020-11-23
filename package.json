@@ -22,7 +22,7 @@
     "electron-builder": "^22.9.1"
   },
   "build": {
-    "productName": "内容校对程序",
+    "productName": "网页辅助审核系统",
     "appId": "com.puge.neirong",
     "copyright": "PUGE",
     "directories": {

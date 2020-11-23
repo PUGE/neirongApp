@@ -13,6 +13,7 @@
 .nrsh.Polity {
   background-color: yellow;
   border-radius: 3px;
+  color: black;
 }
 
 .nrsh.Abuse {
@@ -210,5 +211,12 @@
   border-radius: 3px;
   margin-left: 5px;
   text-align: center;
+  cursor: pointer;
+}
+
+.neirong_clear {
+  background-color: peru;
+  padding: 3px 5px;
+  border-radius: 3px;
   cursor: pointer;
 }

@@ -9,7 +9,7 @@ function createWindow () {
     width: 1400,
     height: 800,
     title: "网页内容审核工具",
-    autoHideMenuBar: true,
+    // autoHideMenuBar: true,
     icon: "./image/icon.png",
     webPreferences: {
       nodeIntegration: true,
@@ -19,7 +19,7 @@ function createWindow () {
 
   // and load the index.html of the app.
   // mainWindow.loadFile('index.html')
-  mainWindow.loadURL("http://www.people.com.cn/")
+  mainWindow.loadURL("http://cms.peopleurl.cn/cms/ChannelView.shtml?id=405210")
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
   mainWindow.webContents.on("did-finish-load", function() {
@@ -59,7 +59,6 @@ app.on('window-all-closed', function () {
 ipcMain.on('changeUrl', (event, arg) => {
   console.log(arg)
   mainWindow.loadURL(arg.url)
-  console.log(requestId)
   event.returnValue = {err: 0}
 })
 
