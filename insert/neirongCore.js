@@ -4,7 +4,6 @@ var Datastore = require('nedb'), db = new Datastore({ filename: 'path/to/datafil
 const serverIP = 'http://49.232.216.171:8006/'
 const sentenceHideArr = [',', '"', '“', '”', '.', '。', '，']
 
-let findList = {}
 let findListArr = []
 let rightNum = 0
 let errorNum = 0
@@ -17,11 +16,9 @@ function changeURL() {
   })
 }
 
-
 function chengyuBaseHandle (htmlData, data) {
   data.forEach(item => {
-    if (!findList[item['text']]) {
-      findList[item['text']] = item
+    if (htmlData.includes(item['text'])) {
       findListArr.push(item)
       item.type = '正确成语'
       item.tips = `<h2 style="font-size: 20px;">${item['text']}</h2><h2 style="font-size: 20px;">[${item['pinyin2']}]</h2><p>释义：${item['interpretation']}</p><p>出处：${item['source']}</p><p>示例：${item['example']}</p>`
@@ -37,9 +34,9 @@ function chengyuPinyinHandle (htmlData, data) {
   // console.log(htmlData)
   
   data.forEach(item => {
-    if (!findList[item['like']]) {
-      findList[item['like']] = item
+    if (htmlData.includes(item['text'])) {
       findListArr.push(item)
+      item.tagNeirong = htmlData
       item.type = '错误成语'
       const startPos = htmlData.indexOf(item['like'])
       const startStr = htmlData.slice(startPos - 1, startPos)
@@ -63,15 +60,14 @@ function chengyuPinyinHandle (htmlData, data) {
 }
 
 function baseHandle (htmlData, data) {
-  // console.log(htmlData)
+  // console.log(data)
   data.forEach(item => {
-    if (!findList[item['text']]) {
-      findList[item['text']] = item
+    if (htmlData.includes(item['text'])) {
       findListArr.push(item)
       if (item.type === 'Standard') {
-        htmlData = htmlData.replace(new RegExp(item['text'], "gm"), `<nrsh data-ind="${findListArr.length}" class="nrsh base Standard">${item['text']}</nrsh>`)
+        htmlData = htmlData.replace(item['text'], `<nrsh data-ind="${findListArr.length}" class="nrsh base Standard">${item['text']}</nrsh>`)
       } else {
-        htmlData = htmlData.replace(new RegExp(item['text'],"gm"), `<nrsh data-ind="${findListArr.length}" class="nrsh base ${item.type}">${item['text']}</nrsh>`)
+        htmlData = htmlData.replace(item['text'], `<nrsh data-ind="${findListArr.length}" class="nrsh base ${item.type}">${item['text']}</nrsh>`)
       }
       rightNum++
     }
@@ -82,9 +78,9 @@ function baseHandle (htmlData, data) {
 function pinyinHandle (htmlData, data) {
   // console.log(data)
   data.forEach(item => {
-    if (!findList[item['like']]) {
-      findList[item['like']] = item
+    if (htmlData.includes(item['text'])) {
       findListArr.push(item)
+      item.tagNeirong = htmlData
       const startPos = htmlData.indexOf(item['like'])
       const startStr = htmlData.slice(startPos - 1, startPos)
       const endStr = htmlData.slice(startPos + item['text'].length, startPos + item['text'].length + 1)
@@ -109,28 +105,15 @@ function pinyinHandle (htmlData, data) {
   return htmlData
 }
 
-function networkHandle (htmlData, data) {
-  // console.log(data)
-  data.forEach(item => {
-    if (!findList[item['HitInfo']]) {
-      findList[item['HitInfo']] = item
-      findListArr.push(item)
-      htmlData = htmlData.replace(new RegExp(item['HitInfo'],"gm"), `<nrsh data-ind="${findListArr.length}" class="nrsh">${item['HitInfo']}</nrsh>`)
-    } else {
-      console.log(`${item['HitInfo']} 已被找出，跳过词语!`)
-    }
-  })
-  return htmlData
-}
-
 function regexpHandle (htmlData, data) {
   data.forEach(item => {
-    if (!findList[item['like']]) {
-      findList[item['like']] = item
+    if (htmlData.includes(item['like'])) {
+      console.log(htmlData, item['like'])
+      item.tagNeirong = htmlData
       findListArr.push(item)
       const startPos = htmlData.indexOf(item['like'])
       const startStr = htmlData.slice(startPos - 1, startPos)
-      const endStr = htmlData.slice(startPos + item['text'].length, startPos + item['text'].length + 1)
+      const endStr = htmlData.slice(startPos + item['like'].length, startPos + item['like'].length + 1)
       item.sentence = []
       if (!sentenceHideArr.includes(startStr)) {
         item.sentence.push(startStr + item['like'])
@@ -138,14 +121,14 @@ function regexpHandle (htmlData, data) {
       if (!sentenceHideArr.includes(endStr)) {
         item.sentence.push(item['like'] + endStr)
       }
-      item.sentenceStr = htmlData.slice(startPos - 4, startPos + item['text'].length + 4)
       if (item['likeNumber'] != 100) {
         item.type = '疑似错误'
-        htmlData = htmlData.replace(new RegExp(item['like'], "gm"), `<nrsh data-ind="${findListArr.length}" class="nrsh regexp regexp-like">${item['like']}</nrsh>`)
+        htmlData = htmlData.replace(item['like'], `<nrsh data-ind="${findListArr.length}" class="nrsh regexp regexp-like">${item['like']}</nrsh>`)
       } else {
-        htmlData = htmlData.replace(new RegExp(item['like'], "gm"), `<nrsh data-ind="${findListArr.length}" class="nrsh regexp XiYu">${item['like']}</nrsh>`)
+        htmlData = htmlData.replace(item['like'], `<nrsh data-ind="${findListArr.length}" class="nrsh regexp XiYu">${item['like']}</nrsh>`)
       }
       errorNum++
+      console.log(item)
       errorArr.push(item)
     }
   })
@@ -154,7 +137,7 @@ function regexpHandle (htmlData, data) {
 
 let errorArr = []
 function neirongXuexi(index) {
-  console.log(errorArr[index])
+  // console.log(errorArr[index])
   // 发送检查请求
   fetch(serverIP + "xuexi", {
     method: 'POST',
@@ -186,7 +169,7 @@ function loadConfig() {
     if (doc) {
       webConfig = doc
       if (webConfig.autoReload) {
-        console.log(document.querySelector('#neirongAutoReload'))
+        // console.log(document.querySelector('#neirongAutoReload'))
         document.querySelector('#neirongAutoReload').checked = true
         startAutoReload()
       }
@@ -246,28 +229,61 @@ function changeConfig (name, event) {
   console.log(name)
   const check = event.target.checked
   webConfig[name] = check
-  console.log(webConfig)
+  // console.log(webConfig)
   db.update({ name: 'config' }, webConfig)
 }
+
+function handleEle (element, data) {
+  let htmlData = element.innerText
+  let textCopy = htmlData
+  
+  // 先进行基础审查
+  if (data['regexp'] && data['regexp'].length > 0) {
+    // console.log('使用正则纠错!')
+    htmlData = regexpHandle(htmlData, data['regexp'])
+  }
+  htmlData = baseHandle(htmlData, data['base'])
+
+  if (data['pinyin']) {
+    // console.log('使用拼音匹配!')
+    htmlData = pinyinHandle(htmlData, data['pinyin'])
+  }
+  if (data['chengyuBase']) {
+    // console.log('使用成语匹配!')
+    htmlData = chengyuBaseHandle(htmlData, data['chengyuBase'])
+  }
+  if (data['chengyuPinyin'] && data['chengyuPinyin'].length > 0) {
+    // console.log('使用成语拼音纠错!')
+    htmlData = chengyuPinyinHandle(htmlData, data['chengyuPinyin'])
+  }
+  // console.log(htmlData)
+  if (textCopy !== htmlData) {
+    // console.log(htmlData)
+    element.innerHTML = htmlData
+  }
+}
+
 
 function checkConn () {
   console.log('点击检查按钮!')
   rightNum = 0
   errorNum = 0
   errorArr = []
-  let TextArr = []
+  let sendList = new Set()
   document.querySelectorAll('a').forEach(element => {
-    TextArr.push(element.innerText)
+    const innerText = element.innerText
+    if (innerText !== '') sendList.add(element.innerText)
   });
   document.querySelectorAll('p').forEach(element => {
     if (!element.querySelector('a')) {
-      TextArr.push(element.innerText)
+      const innerText = element.innerText
+      if (innerText !== '') sendList.add(element.innerText)
     }
   });
-  let checkData = TextArr.join("*&*")
-  checkData = checkData.replace(/\r/g, '')
-  checkData = checkData.replace(/\n/g, '')
-  checkData = checkData.replace(/ /g, '')
+  let checkData = Array.from(sendList).join("*&*")
+  // console.log(checkData)
+  // checkData = checkData.replace(/\r/g, '')
+  // checkData = checkData.replace(/\n/g, '')
   // 发送检查请求
   fetch(serverIP + "check", {
     method: 'POST',
@@ -286,34 +302,17 @@ function checkConn () {
     },"content": checkData})
   }).then(response => response.json()).then(result => {
     let htmlData = document.body.innerHTML
-    
-    const data = result['data']
-    // console.log(htmlData)
-    // 先进行基础审查
-    if (data['regexp'] && data['regexp'].length > 0) {
-      console.log('使用正则纠错!')
-      htmlData = regexpHandle(htmlData, data['regexp'])
-    }
-    htmlData = baseHandle(htmlData, data['base'])
-    
-    if (data['network']) {
-      console.log('使用云词库!')
-      htmlData = networkHandle(htmlData, data['network'])
-    }
-    if (data['pinyin']) {
-      console.log('使用拼音匹配!')
-      htmlData = pinyinHandle(htmlData, data['pinyin'])
-    }
-    if (data['chengyuBase']) {
-      console.log('使用成语匹配!')
-      htmlData = chengyuBaseHandle(htmlData, data['chengyuBase'])
-    }
-    if (data['chengyuPinyin'] && data['chengyuPinyin'].length > 0) {
-      console.log('使用成语拼音纠错!')
-      htmlData = chengyuPinyinHandle(htmlData, data['chengyuPinyin'])
-    }
-    // console.log(htmlData)
-    document.body.innerHTML = htmlData
+    // 遍历所有元素
+    document.querySelectorAll('a').forEach(element => {
+      const innerText = element.innerText
+      if (innerText !== '') handleEle(element, result['data'])
+    });
+    document.querySelectorAll('p').forEach(element => {
+      if (!element.querySelector('a')) {
+        const innerText = element.innerText
+        if (innerText !== '') handleEle(element, result['data'])
+      }
+    });
     // setTimeout(() => {
     //   this.reHandleEvent()
     //   this.query('.loading').style.display = 'none'
@@ -332,7 +331,7 @@ function checkConn () {
       if (errorArr.length > 0) {
         for (let index = 0; index < errorArr.length; index++) {
           const element = errorArr[index];
-          errorText += `<p>关键词 [${element.like}] 疑似为 [${element.text}] <span class="neirong_clear" onclick="neirongXuexi(${index})">学习为无误</span></p>`
+          errorText += `<p>关键词 [${element.like}] 疑似为 [${element.text}]<br><span class="tag-neirong">在页面中的内容为:${element.tagNeirong }</span> <span class="neirong_clear" onclick="neirongXuexi(${index})">学习为无误</span></p>`
         }
       } else {
         errorText = '<div class="neirong-title">未发现疑似错误</div>'
@@ -351,9 +350,11 @@ function checkConn () {
             const ind =  parseInt(e.target.getAttribute("data-ind"))
             const data = findListArr[ind - 1]
             if (!data) return
+            const likeText = data.like || data.relation
             let newHtml = '<div class="neirong-title">详细信息</div>'
-            if (data.like) {
-              newHtml += `${data.like}<br>正确的文字可能为: ${data.text}<br>`
+            if (likeText) {
+              newHtml += `${likeText}<br>正确的文字可能为: ${data.text}<br>`
+              newHtml += `${likeText}<br>在页面中对应的文字: ${data.tagNeirong}<br>`
             } else {
               newHtml += `${data.text}<br>正确关键词！`
             }
