@@ -1,5 +1,4 @@
-const ipcRenderer = require('electron').ipcRenderer
-var Datastore = require('nedb'), db = new Datastore({ filename: 'path/to/datafile', autoload: true });
+const ipcRenderer = nodeRequire('electron').ipcRenderer
 // 内容智能学习
 const serverIP = 'http://49.232.216.171:8006/'
 const sentenceHideArr = [',', '"', '“', '”', '.', '。', '，']
@@ -78,7 +77,7 @@ function baseHandle (htmlData, data) {
 function pinyinHandle (htmlData, data) {
   // console.log(data)
   data.forEach(item => {
-    if (htmlData.includes(item['text'])) {
+    if (htmlData.includes(item['like'])) {
       findListArr.push(item)
       item.tagNeirong = htmlData
       const startPos = htmlData.indexOf(item['like'])
@@ -165,72 +164,61 @@ function neirongSearch (event) {
 let webConfig = null
 function loadConfig() {
   console.log('获取配置文件!')
-  db.findOne({ name: 'config' }, function (err, doc) {
-    if (doc) {
-      webConfig = doc
-      if (webConfig.autoReload) {
-        // console.log(document.querySelector('#neirongAutoReload'))
-        document.querySelector('#neirongAutoReload').checked = true
-        startAutoReload()
-      }
-      if (webConfig.autoCheck) {
-        // checkConn()
-        document.querySelector('#autoCheck').checked = true
-        var e = document.createEvent("MouseEvents");
-        e.initEvent("click", true, true);
-        document.querySelector('#checkButton').dispatchEvent(e)
-      }
-    } else {
-      webConfig = {
-        name: "config",
-        autoReload: false,
-        autoCheck: false
-      }
-      db.insert(webConfig)
+  webConfig = localStorage.getItem('config')
+  
+  if (webConfig) {
+    webConfig = JSON.parse(webConfig)
+    console.log(webConfig)
+    if (webConfig.autoReload) {
+      document.querySelector('#neirongAutoReload').checked = true
+      startAutoReload()
     }
-  })
-}
-
-function reLoadConfig() {
-  console.log('获取配置文件!')
-  db.findOne({ name: 'config' }, function (err, doc) {
-    if (doc) {
-      webConfig = doc
-      if (webConfig.autoReload) {
-        document.querySelector('#neirongAutoReload').checked = true
-      }
-      if (webConfig.autoCheck) {
-        // checkConn()
-        document.querySelector('#autoCheck').checked = true
-      }
-    } else {
-      webConfig = {
-        name: "config",
-        autoReload: false,
-        autoCheck: false
-      }
-      db.insert(webConfig)
+    if (webConfig.reloadNum) {
+      document.querySelector('#reloadNum').value = webConfig.reloadNum
     }
-  })
+    if (webConfig.autoCheck) {
+      // checkConn()
+      document.querySelector('#autoCheck').checked = true
+      var e = document.createEvent("MouseEvents");
+      e.initEvent("click", true, true);
+      document.querySelector('#checkButton').dispatchEvent(e)
+    }
+  } else {
+    webConfig = {
+      name: "config",
+      autoReload: false,
+      autoCheck: false
+    }
+    localStorage.setItem('config', JSON.stringify(webConfig))
+  }
 }
 
 loadConfig()
 
 
 function startAutoReload () {
+  console.log('开启自动刷新')
   setTimeout(() => {
     console.log('自动刷新')
-    console.log(webConfig['autoReload'])
     if (webConfig['autoReload']) window.location.replace("")
-  }, 60000);
+  }, parseInt(document.querySelector('#reloadNum').value) * 1000);
 }
 
 function changeConfig (name, event) {
   console.log(name)
   const check = event.target.checked
   webConfig[name] = check
-  // console.log(webConfig)
-  db.update({ name: 'config' }, webConfig)
+  if (name = 'autoReload' && webConfig.autoReload) {
+    startAutoReload()
+  }
+  localStorage.setItem('config', JSON.stringify(webConfig))
+}
+
+function changeConfigNum (name, event) {
+  console.log(name)
+  const check = event.target.value
+  webConfig[name] = check
+  localStorage.setItem('config', JSON.stringify(webConfig))
 }
 
 function handleEle (element, data) {
@@ -343,7 +331,6 @@ function checkConn () {
       document.querySelectorAll('.nrsh .nrsh').forEach(element => {
         element.outerHTML = element.innerText
       });
-      reLoadConfig()
       setTimeout(() => {
         document.querySelectorAll('.nrsh').forEach(element => {
           element.addEventListener("mouseenter", (e) => {

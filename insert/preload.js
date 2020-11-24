@@ -1,7 +1,16 @@
 // All of the Node.js APIs are available in the preload process.
 // It has the same sandbox as a Chrome extension.
+try {
+  window.nodeRequire = require;
+}
+catch(err) {
+  console.log("不需要删除");
+}
+delete window.require;
+delete window.exports;
+delete window.module;
+
 const ipcRenderer = require('electron').ipcRenderer
-const sentenceHideArr = [',', '"', '“', '”', '.', '。', '，']
 
 
 const serverIP = 'http://49.232.216.171:8006/'
@@ -60,6 +69,7 @@ window.addEventListener('DOMContentLoaded', () => {
   insertElement.innerHTML = `
   <div class="title-bar">
     <div class="back neitong-title-item" onclick="window.history.go(-1)"><span class="icon">&#xe711;</span>返回</div>
+    <div class="reload neitong-title-item" onclick="location.reload()"><span class="icon">&#xe602;</span>刷新</div>
     <div id="modalbox" class="neirong-search"><input type="text" id="neirongSearchInput"><span class="neirong-button" onclick="neirongSearch()">搜索</span></div>
   </div>
   <div class="neirong-top">
@@ -69,7 +79,7 @@ window.addEventListener('DOMContentLoaded', () => {
   <div class="neirong-bottom">
     <input id="neirongAutoReload" type="checkbox" name="autoReload" onchange="changeConfig('autoReload', event)" value="自动刷新"/>
     <span>每隔</span>
-    <input type="number" value="60">
+    <input type="number" id="reloadNum" onchange="changeConfigNum('reloadNum', event)" value="60">
     <span>秒自动刷新页面</span>
     <input id="autoCheck" type="checkbox" name="autoReload" onchange="changeConfig('autoCheck', event)" value=""/>
     <span>自动检测页面</span>
