@@ -268,6 +268,12 @@ function checkConn () {
       if (innerText !== '') sendList.add(element.innerText)
     }
   });
+  document.querySelectorAll('li').forEach(element => {
+    if (!element.querySelector('a')) {
+      const innerText = element.innerText
+      if (innerText !== '') sendList.add(element.innerText)
+    }
+  });
   let checkData = Array.from(sendList).join("*&*")
   // console.log(checkData)
   // checkData = checkData.replace(/\r/g, '')
@@ -296,6 +302,12 @@ function checkConn () {
       if (innerText !== '') handleEle(element, result['data'])
     });
     document.querySelectorAll('p').forEach(element => {
+      if (!element.querySelector('a')) {
+        const innerText = element.innerText
+        if (innerText !== '') handleEle(element, result['data'])
+      }
+    });
+    document.querySelectorAll('li').forEach(element => {
       if (!element.querySelector('a')) {
         const innerText = element.innerText
         if (innerText !== '') handleEle(element, result['data'])

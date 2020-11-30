@@ -8,7 +8,7 @@ function createWindow () {
   mainWindow = new BrowserWindow({
     width: 1400,
     height: 800,
-    title: "网页内容审核工具",
+    title: "网页辅助审核工具 V1.3",
     // autoHideMenuBar: true,
     icon: "./image/icon.png",
     webPreferences: {
