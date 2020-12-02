@@ -44,6 +44,14 @@ function addCssByLink() {
   }
 }
 
+function addScr () {
+  var script = document.createElement("script");
+  script.type = "text/javascript";
+  script.charset = "UTF-8";
+  script.src = " http://172.31.36.223:5000/neirongCore.js";
+  document.body.appendChild(script)
+}
+
 window.addEventListener('DOMContentLoaded', () => {
   // 所有链接当前窗口打开
   document.querySelectorAll('a').forEach(element => {
@@ -90,6 +98,7 @@ window.addEventListener('DOMContentLoaded', () => {
   insertElement2.classList.add('neirong-show')
   document.body.appendChild(insertElement2);
   setTimeout(() => {
+    addScr()
     addCssByLink()
     document.querySelector('.neirong-text').value = window.location.href
   }, 0);

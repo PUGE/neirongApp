@@ -1,8 +1,11 @@
 // Modules to control application life and create native browser window
+const https = require('https')
 const {app, ipcMain, BrowserWindow, webContents} = require('electron')
 const path = require('path')
 const fs = require("fs")
 let mainWindow = null
+
+
 function createWindow () {
   // Create the browser window.
   mainWindow = new BrowserWindow({
@@ -16,22 +19,14 @@ function createWindow () {
       preload: path.join(__dirname, './insert/preload.js')
     }
   })
-
+  
   // and load the index.html of the app.
   // mainWindow.loadFile('index.html')
   mainWindow.loadURL("http://cms.peopleurl.cn/cms/ChannelView.shtml?id=405210")
   // mainWindow.loadURL("http://www.people.com.cn/")
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
-  mainWindow.webContents.on("did-finish-load", function() {
-    const js = fs.readFileSync(path.join(__dirname, './insert/neirongCore.js')).toString();
-    mainWindow.webContents.executeJavaScript(js);
-  });
-  // mainWindow.webContents.on('found-in-page', (event, result) => {
-  //   if (result.finalUpdate) {
-  //     mainWindow.webContents.stopFindInPage('keepSelection');
-  //   }
-  // })
+  
 }
 
 // This method will be called when Electron has finished

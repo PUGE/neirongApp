@@ -105,6 +105,7 @@ function pinyinHandle (htmlData, data) {
 }
 
 function regexpHandle (htmlData, data) {
+  // console.log(data)
   data.forEach(item => {
     if (htmlData.includes(item['like'])) {
       console.log(htmlData, item['like'])
@@ -121,6 +122,7 @@ function regexpHandle (htmlData, data) {
         item.sentence.push(item['like'] + endStr)
       }
       if (item['likeNumber'] != 100) {
+        console.log('添加!!!!')
         item.type = '疑似错误'
         htmlData = htmlData.replace(item['like'], `<nrsh data-ind="${findListArr.length}" class="nrsh regexp regexp-like">${item['like']}</nrsh>`)
         errorNum++
