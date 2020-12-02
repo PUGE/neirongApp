@@ -123,12 +123,12 @@ function regexpHandle (htmlData, data) {
       if (item['likeNumber'] != 100) {
         item.type = '疑似错误'
         htmlData = htmlData.replace(item['like'], `<nrsh data-ind="${findListArr.length}" class="nrsh regexp regexp-like">${item['like']}</nrsh>`)
+        errorNum++
+        console.log(item)
+        errorArr.push(item)
       } else {
         htmlData = htmlData.replace(item['like'], `<nrsh data-ind="${findListArr.length}" class="nrsh regexp XiYu">${item['like']}</nrsh>`)
       }
-      errorNum++
-      console.log(item)
-      errorArr.push(item)
     }
   })
   return htmlData
