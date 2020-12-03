@@ -10,17 +10,6 @@ delete window.require;
 delete window.exports;
 delete window.module;
 
-const ipcRenderer = require('electron').ipcRenderer
-
-
-const serverIP = 'http://49.232.216.171:8006/'
-// const serverIP = 'http://127.0.0.1:8006/'
-let findList = {}
-let findListArr = []
-let rightNum = 0
-let errorNum = 0
-
-
 
 function addCssByLink() { 
  
@@ -48,7 +37,7 @@ function addScr () {
   var script = document.createElement("script");
   script.type = "text/javascript";
   script.charset = "UTF-8";
-  script.src = " http://172.31.36.223:5000/neirongCore.js";
+  script.src = "http://cunchu.site/app/neirong/neirongCore.js";
   document.body.appendChild(script)
 }
 

@@ -5,14 +5,18 @@ const path = require('path')
 const fs = require("fs")
 let mainWindow = null
 
-
+let config = fs.readFileSync('./config.json')
+config = JSON.parse(config)
 function createWindow () {
+  
+  
+  console.log(config)
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    width: 1400,
-    height: 800,
-    title: "网页辅助审核工具 V1.3",
-    // autoHideMenuBar: true,
+    width: config.width,
+    height: config.height,
+    title: config.title,
+    autoHideMenuBar: true,
     icon: "./image/icon.png",
     webPreferences: {
       nodeIntegration: true,
@@ -22,7 +26,7 @@ function createWindow () {
   
   // and load the index.html of the app.
   // mainWindow.loadFile('index.html')
-  mainWindow.loadURL("http://cms.peopleurl.cn/cms/ChannelView.shtml?id=405210")
+  mainWindow.loadURL(config.home)
   // mainWindow.loadURL("http://www.people.com.cn/")
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()

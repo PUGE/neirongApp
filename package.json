@@ -1,6 +1,6 @@
 {
   "name": "neirong",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A minimal Electron application",
   "main": "main.js",
   "scripts": {
@@ -31,8 +31,5 @@
     "win": {
       "icon": "./image/icon.ico"
     }
-  },
-  "dependencies": {
-    "nedb": "^1.8.0"
   }
 }

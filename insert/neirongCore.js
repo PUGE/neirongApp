@@ -276,6 +276,7 @@ function checkConn () {
       if (innerText !== '') sendList.add(element.innerText)
     }
   });
+  console.log(sendList)
   let checkData = Array.from(sendList).join("*&*")
   // console.log(checkData)
   // checkData = checkData.replace(/\r/g, '')
