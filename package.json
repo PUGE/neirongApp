@@ -19,7 +19,7 @@
   "license": "CC0-1.0",
   "devDependencies": {
     "electron": "^10.1.5",
-    "electron-builder": "^22.9.1"
+    "electron-builder": "^23.1.0"
   },
   "build": {
     "productName": "网页辅助审核系统",
